@@ -8,9 +8,9 @@
 ## Typical build process
 * Build maven artifact - run ``mvn clean install``.
 * Build docker image - run ``mvn dockerfile:build``.
-* You can check that image is created in ``dockerfile:images``.
+* You can check that image is created in ``docker images``.
 * Run docker container with open debug port locally (replace version tag with your version accordingly to ``<tag>`` in maven):  
-    ``docker run -p 8080:8080 -p 8000:8000 -t  gcr.io/dpopov-gcp-spring-boot/gs-spring-boot-docker:<VERSION>``
+    ``docker run -p 8080:8080 -p 8000:8000 -t gcr.io/dpopov-gcp-spring-boot/gs-spring-boot-docker:<VERSION>``
 * Application will be accessible on <http://localhost:8080/>
 * You can connect to your running docker container with bash: 
   ``docker exec -it <CONTAINER_ID> /bin/bash``   

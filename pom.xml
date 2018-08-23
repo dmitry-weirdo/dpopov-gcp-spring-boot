@@ -18,7 +18,7 @@
         <!--<docker.image.prefix>springio</docker.image.prefix>-->
         <docker.image.prefix>gcr.io</docker.image.prefix>
         <gcp.project.id>dpopov-gcp-spring-boot</gcp.project.id>
-        <gcp.credentials.file>dpopov-gcp-spring-boot-b3afde774685.json</gcp.credentials.file>
+        <gcp.credentials.file>dpopov-gcp-spring-boot-a23979c5709c.json</gcp.credentials.file>
     </properties>
 
     <dependencies>
@@ -68,7 +68,7 @@
                         <GOOGLE_APP_CREDENTIALS_FILE>target/classes/${gcp.credentials.file}</GOOGLE_APP_CREDENTIALS_FILE> <!-- argument used in Dockerfile -->
                     </buildArgs>
 
-                    <tag>v11</tag>
+                    <tag>v12</tag>
                 </configuration>
             </plugin>
 

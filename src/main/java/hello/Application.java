@@ -30,7 +30,7 @@ public class Application {
     }
 
     private String getResultString(final String datastoreTestResult, final String cloudStorageTestResult) {
-        final int versionNumber = 11;
+        final int versionNumber = 12;
 
         final String lineBreak = "<br/>";
         final String separator = lineBreak + "--------------------------------------------" + lineBreak;
