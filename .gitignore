@@ -16,6 +16,9 @@
 *.iml
 *.ipr
 
+# ignore json files with google credentials
+dpopov*.json
+
 ### NetBeans ###
 /nbproject/private/
 /build/
