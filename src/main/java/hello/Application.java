@@ -13,6 +13,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.*;
+
 @SpringBootApplication
 @RestController
 public class Application {
@@ -25,12 +27,13 @@ public class Application {
     public String home() {
         final String datastoreTestResult = datastoreTest();
         final String cloudStorageTestResult = cloudStorageTest();
+        final String cloudSqlTestResult = cloudSqlTest();
 
-        return getResultString(datastoreTestResult, cloudStorageTestResult);
+        return getResultString(datastoreTestResult, cloudStorageTestResult, cloudSqlTestResult);
     }
 
-    private String getResultString(final String datastoreTestResult, final String cloudStorageTestResult) {
-        final int versionNumber = 12;
+    private String getResultString(final String datastoreTestResult, final String cloudStorageTestResult, final String cloudSqlTestResult) {
+        final int versionNumber = 13;
 
         final String lineBreak = "<br/>";
         final String separator = lineBreak + "--------------------------------------------" + lineBreak;
@@ -42,15 +45,21 @@ public class Application {
 
                     + separator
 
-                    + "added simple Datastore code, passing credentials via ${GOOGLE_APPLICATION_CREDENTIALS} env variable."
+                    + "added simple Datastore code, passing credentials via <code>${GOOGLE_APPLICATION_CREDENTIALS}</code> env variable."
                     + lineBreak
                     + "<strong>Result:</strong> " + datastoreTestResult
 
                     + separator
 
-                    + "added simple Cloud Storage code, passing credentials via ${GOOGLE_APPLICATION_CREDENTIALS} env variable."
+                    + "added simple Cloud Storage code, passing credentials via <code>${GOOGLE_APPLICATION_CREDENTIALS}</code> env variable."
                     + lineBreak
                     + "<strong>Result:</strong> " + cloudStorageTestResult
+
+                    + separator
+
+                    + "added simple Cloud SQL code working via <code>com.google.cloud.sql.postgres.SocketFactory</code>, <b>without</b> Cloud SQL Proxy."
+                    + lineBreak
+                    + "<strong>Result:</strong> " + cloudSqlTestResult
 
                     + separator
         ;
@@ -132,6 +141,73 @@ public class Application {
         }
 
         System.out.println("================== cloudStorageTest end =====================");
+
+        return result;
+    }
+
+
+    public static String cloudSqlTest() {
+        System.out.println("================== cloudSqlTest start =====================");
+
+
+        // The instance connection name can be obtained from the instance overview page in Cloud Console
+        // or by running "gcloud sql instances describe <instance> | grep connectionName".
+        final String instanceConnectionName = "dpopov-gcp-spring-boot:us-central1:dpopov-postgres";
+
+        // The database from which to list tables.
+        final String databaseName = "postgres";
+
+        final String username = "postgres";
+
+        // This is the password that was set via the Cloud Console or empty if never set
+        // (not recommended).
+        final String password = "123QWEasd";
+
+        if (instanceConnectionName.equals("<insert_connection_name>")) {
+            System.err.println("Please update the sample to specify the instance connection name.");
+            System.exit(1);
+        }
+
+        if (password.equals("<insert_password>")) {
+            System.err.println("Please update the sample to specify the postgres password.");
+            System.exit(1);
+        }
+
+        final String jdbcUrl = String.format(
+              "jdbc:postgresql://google/%s?socketFactory=com.google.cloud.sql.postgres.SocketFactory&socketFactoryArg=%s"
+            , databaseName
+            , instanceConnectionName
+        );
+
+        System.out.printf("jdbcUrl: %s \n", jdbcUrl);
+
+        String result;
+
+        try {
+            final Connection connection = DriverManager.getConnection(jdbcUrl, username, password);
+
+            try (final Statement statement = connection.createStatement()) {
+                final ResultSet resultSet = statement.executeQuery("select schemaname, tablename from pg_catalog.pg_tables");
+
+                final StringBuilder sb = new StringBuilder();
+                sb.append("Table names: <br/>");
+
+                while (resultSet.next()) {
+                    final String tableName = resultSet.getString(1) + "." + resultSet.getString(2);
+                    sb.append(tableName).append("<br/>");
+
+                    System.out.println(tableName);
+                }
+
+                result = sb.toString();
+            }
+        }
+        catch (final SQLException e) {
+            e.printStackTrace();
+            result = "SQLException: " + e.getMessage();
+        }
+
+        System.out.println("================== cloudSqlTest end =====================");
 
         return result;
     }

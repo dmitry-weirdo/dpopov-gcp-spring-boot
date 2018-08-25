@@ -46,6 +46,20 @@
             <version>1.35.0</version>
         </dependency>
 
+        <!-- PostgreSQL jdbc driver -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.1.1</version>
+        </dependency>
+
+        <!-- Google Postgres socket factory-->
+        <dependency>
+            <groupId>com.google.cloud.sql</groupId>
+            <artifactId>postgres-socket-factory</artifactId>
+            <version>1.0.10</version>
+        </dependency>
+
     </dependencies>
 
 
@@ -68,7 +82,7 @@
                         <GOOGLE_APP_CREDENTIALS_FILE>target/classes/${gcp.credentials.file}</GOOGLE_APP_CREDENTIALS_FILE> <!-- argument used in Dockerfile -->
                     </buildArgs>
 
-                    <tag>v12</tag>
+                    <tag>v13</tag>
                 </configuration>
             </plugin>
 
