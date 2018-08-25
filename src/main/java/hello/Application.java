@@ -8,16 +8,21 @@ import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.*;
+import java.util.List;
 
 @SpringBootApplication
 @RestController
 public class Application {
+    @Autowired
+    private GuestBookRepository guestbookRepository;
+
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
@@ -28,12 +33,18 @@ public class Application {
         final String datastoreTestResult = datastoreTest();
         final String cloudStorageTestResult = cloudStorageTest();
         final String cloudSqlTestResult = cloudSqlTest();
+        final String cloudSqlHibernateTestResult = cloudSqlHibernateTest();
 
-        return getResultString(datastoreTestResult, cloudStorageTestResult, cloudSqlTestResult);
+        return getResultString(datastoreTestResult, cloudStorageTestResult, cloudSqlTestResult, cloudSqlHibernateTestResult);
     }
 
-    private String getResultString(final String datastoreTestResult, final String cloudStorageTestResult, final String cloudSqlTestResult) {
-        final int versionNumber = 13;
+    private String getResultString(
+          final String datastoreTestResult
+        , final String cloudStorageTestResult
+        , final String cloudSqlTestResult
+        , final String cloudSqlHibernateTestResult
+    ) {
+        final int versionNumber = 14;
 
         final String lineBreak = "<br/>";
         final String separator = lineBreak + "--------------------------------------------" + lineBreak;
@@ -60,6 +71,12 @@ public class Application {
                     + "added simple Cloud SQL code working via <code>com.google.cloud.sql.postgres.SocketFactory</code>, <b>without</b> Cloud SQL Proxy."
                     + lineBreak
                     + "<strong>Result:</strong> " + cloudSqlTestResult
+
+                    + separator
+
+                    + "added selecting form Cloud SQL via Hibernate"
+                    + lineBreak
+                    + "<strong>Result:</strong> " + cloudSqlHibernateTestResult
 
                     + separator
         ;
@@ -210,5 +227,32 @@ public class Application {
         System.out.println("================== cloudSqlTest end =====================");
 
         return result;
+    }
+
+    private String cloudSqlHibernateTest() {
+        System.out.println("================== cloudSqlHibernateTest start =====================");
+
+        final List<GuestBook> guestBooks = guestbookRepository.findAll();
+        System.out.printf("Loaded %d guest books. \n", guestBooks.size());
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append("Loaded books: <br/>");
+
+        sb.append("<table border=\"1\"><tbody>");
+        sb.append("<tr><th>Id</th><th>Guest name</th><th>Content</th></tr>");
+
+        for (final GuestBook guestBook : guestBooks) {
+            sb.append("<tr>");
+            sb.append("<td>").append(guestBook.getId()).append("</td>");
+            sb.append("<td>").append(guestBook.getGuestName()).append("</td>");
+            sb.append("<td>").append(guestBook.getContent()).append("</td>");
+            sb.append("</tr>");
+        }
+
+        sb.append("</tbody></table>");
+
+        System.out.println("================== cloudSqlHibernateTest end =====================");
+
+        return sb.toString();
     }
 }

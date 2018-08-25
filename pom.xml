@@ -32,6 +32,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- JPA and Hibernate -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+
         <!-- Google Cloud Datastore client library -->
         <dependency>
             <groupId>com.google.cloud</groupId>
@@ -82,7 +89,7 @@
                         <GOOGLE_APP_CREDENTIALS_FILE>target/classes/${gcp.credentials.file}</GOOGLE_APP_CREDENTIALS_FILE> <!-- argument used in Dockerfile -->
                     </buildArgs>
 
-                    <tag>v13</tag>
+                    <tag>v14</tag>
                 </configuration>
             </plugin>
 
